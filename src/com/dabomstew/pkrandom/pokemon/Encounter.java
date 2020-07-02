@@ -30,6 +30,10 @@ public class Encounter {
     public Pokemon pokemon;
     public int formeNumber;
 
+    // Used only for Gen 7's SOS mechanic
+    public boolean isSOS;
+    public SOSType sosType;
+
     public String toString() {
         if (pokemon == null) {
             return "ERROR";
