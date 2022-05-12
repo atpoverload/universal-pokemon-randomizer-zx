@@ -1,8 +1,8 @@
 package com.dabomstew.pkrandom.pokemon;
 
 /*----------------------------------------------------------------------------*/
-/*--  StatChangeType.java - represents the different types of moves         --*/
-/*--                             that can change a battler's stats.         --*/
+/*--  StatChangeType.java - represents the types of stat buffs that a move  --*/
+/*--                      can apply.                                        --*/
 /*--                                                                        --*/
 /*--  Part of "Universal Pokemon Randomizer ZX" by the UPR-ZX team          --*/
 /*--  Pokemon and any associated names and the like are                     --*/
@@ -25,11 +25,14 @@ package com.dabomstew.pkrandom.pokemon;
 /*----------------------------------------------------------------------------*/
 
 public enum StatChangeType {
-    NONE_OR_UNKNOWN,
-    NO_DAMAGE_STAT_CHANGE_TARGET,
-    NO_DAMAGE_STAT_CHANGE_USER,
-    NO_DAMAGE_STAT_CHANGE_ALL,
-    NO_DAMAGE_STAT_CHANGE_ALLY,
-    DAMAGE_STAT_CHANGE_TARGET,
-    DAMAGE_STAT_CHANGE_USER
+    NONE,
+    ATTACK,
+    DEFENSE,
+    SPECIAL_ATTACK,
+    SPECIAL_DEFENSE,
+    SPEED,
+    ACCURACY,
+    EVASION,
+    ALL,
+    SPECIAL
 }
