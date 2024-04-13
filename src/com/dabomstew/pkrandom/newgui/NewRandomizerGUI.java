@@ -74,6 +74,7 @@ public class NewRandomizerGUI {
     private JCheckBox ptIsDualTypeCheckBox;
     private JRadioButton ptUnchangedRadioButton;
     private JRadioButton ptRandomFollowEvolutionsRadioButton;
+    private JRadioButton ptRandomOneTypeRadioButton;
     private JRadioButton ptRandomCompletelyRadioButton;
     private JRadioButton paUnchangedRadioButton;
     private JRadioButton paRandomRadioButton;
@@ -559,6 +560,7 @@ public class NewRandomizerGUI {
         });
         ptUnchangedRadioButton.addActionListener(e -> enableOrDisableSubControls());
         ptRandomFollowEvolutionsRadioButton.addActionListener(e -> enableOrDisableSubControls());
+        ptRandomOneTypeRadioButton.addActionListener(e -> enableOrDisableSubControls());
         ptRandomCompletelyRadioButton.addActionListener(e -> enableOrDisableSubControls());
         spRandomizeStarterHeldItemsCheckBox.addActionListener(e -> enableOrDisableSubControls());
         tmLevelupMoveSanityCheckBox.addActionListener(e -> enableOrDisableSubControls());
@@ -1490,6 +1492,7 @@ public class NewRandomizerGUI {
         paEnsureTwoAbilitiesCheckbox.setSelected(settings.isEnsureTwoAbilities());
 
         ptRandomFollowEvolutionsRadioButton.setSelected(settings.getTypesMod() == Settings.TypesMod.RANDOM_FOLLOW_EVOLUTIONS);
+        ptRandomOneTypeRadioButton.setSelected(settings.getTypesMod() == Settings.TypesMod.ONE_TYPE_RANDOM);
         ptRandomCompletelyRadioButton.setSelected(settings.getTypesMod() == Settings.TypesMod.COMPLETELY_RANDOM);
         ptUnchangedRadioButton.setSelected(settings.getTypesMod() == Settings.TypesMod.UNCHANGED);
         ptFollowMegaEvosCheckBox.setSelected(settings.isTypesFollowMegaEvolutions());
@@ -1734,7 +1737,7 @@ public class NewRandomizerGUI {
         settings.setEnsureTwoAbilities(paEnsureTwoAbilitiesCheckbox.isSelected());
 
         settings.setTypesMod(ptUnchangedRadioButton.isSelected(), ptRandomFollowEvolutionsRadioButton.isSelected(),
-                ptRandomCompletelyRadioButton.isSelected());
+                ptRandomCompletelyRadioButton.isSelected(), ptRandomOneTypeRadioButton.isSelected());
         settings.setTypesFollowMegaEvolutions(ptFollowMegaEvosCheckBox.isSelected() && ptFollowMegaEvosCheckBox.isVisible());
         settings.setBlockBrokenMovesetMoves(pmsNoGameBreakingMovesCheckBox.isSelected());
         settings.setDualTypeOnly(ptIsDualTypeCheckBox.isSelected());
@@ -2073,6 +2076,9 @@ public class NewRandomizerGUI {
         ptRandomFollowEvolutionsRadioButton.setVisible(true);
         ptRandomFollowEvolutionsRadioButton.setEnabled(false);
         ptRandomFollowEvolutionsRadioButton.setSelected(false);
+        ptRandomOneTypeRadioButton.setVisible(true);
+        ptRandomOneTypeRadioButton.setEnabled(false);
+        ptRandomOneTypeRadioButton.setSelected(false);
         ptRandomCompletelyRadioButton.setVisible(true);
         ptRandomCompletelyRadioButton.setEnabled(false);
         ptRandomCompletelyRadioButton.setSelected(false);
@@ -2714,6 +2720,7 @@ public class NewRandomizerGUI {
             ptUnchangedRadioButton.setEnabled(true);
             ptUnchangedRadioButton.setSelected(true);
             ptRandomFollowEvolutionsRadioButton.setEnabled(true);
+            ptRandomOneTypeRadioButton.setEnabled(true);
             ptRandomCompletelyRadioButton.setEnabled(true);
             ptFollowMegaEvosCheckBox.setVisible(romHandler.hasMegaEvolutions());
             ptIsDualTypeCheckBox.setEnabled(false);

@@ -371,7 +371,7 @@
                   </hspacer>
                   <vspacer id="8f6b1">
                     <constraints>
-                      <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                       <gridbag weightx="0.0" weighty="0.0"/>
                     </constraints>
                   </vspacer>
@@ -400,7 +400,7 @@
                   </component>
                   <component id="45dd7" class="javax.swing.JRadioButton" binding="ptRandomCompletelyRadioButton" default-binding="true">
                     <constraints>
-                      <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                       <gridbag weightx="0.0" weighty="0.0"/>
                     </constraints>
                     <properties>
@@ -411,7 +411,7 @@
                   </component>
                   <component id="360ba" class="javax.swing.JCheckBox" binding="ptFollowMegaEvosCheckBox">
                     <constraints>
-                      <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                       <gridbag weightx="0.0" weighty="0.0"/>
                     </constraints>
                     <properties>
@@ -422,7 +422,7 @@
                   </component>
                   <component id="237b6" class="javax.swing.JCheckBox" binding="ptIsDualTypeCheckBox">
                     <constraints>
-                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                       <gridbag weightx="0.0" weighty="0.0"/>
                     </constraints>
                     <properties>
@@ -430,6 +430,17 @@
                       <selected value="false"/>
                       <text resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="GUI.ptForceDualTypeCheckBox.text"/>
                       <toolTipText resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="GUI.ptForceDualTypeCheckBox.toolTipText"/>
+                    </properties>
+                  </component>
+                  <component id="14a8d" class="javax.swing.JRadioButton" binding="ptRandomOneTypeRadioButton">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <gridbag weightx="0.0" weighty="0.0"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="GUI.ptRandomOneTypeRadioButton.text"/>
+                      <toolTipText resource-bundle="com/dabomstew/pkrandom/newgui/Bundle" key="GUI.ptRandomOneTypeRadioButton.toolTipText"/>
                     </properties>
                   </component>
                 </children>
@@ -3821,6 +3832,7 @@
       <member id="fb38a"/>
       <member id="f7a27"/>
       <member id="45dd7"/>
+      <member id="14a8d"/>
     </group>
     <group name="pokemonEvoButtonGroup">
       <member id="9dc25"/>

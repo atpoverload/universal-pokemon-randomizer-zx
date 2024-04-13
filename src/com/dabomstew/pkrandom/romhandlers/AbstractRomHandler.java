@@ -421,45 +421,100 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean dualTypeOnly = settings.isDualTypeOnly();
 
         List<Pokemon> allPokes = this.getPokemonInclFormes();
-        if (evolutionSanity) {
-            // Type randomization with evolution sanity
-            copyUpEvolutionsHelper(pk -> {
-                // Step 1: Basic or Excluded From Copying Pokemon
-                // A Basic/EFC pokemon has a 35% chance of a second type if
-                // it has an evolution that copies type/stats, a 50% chance
-                // otherwise
-                pk.primaryType = randomType();
-                pk.secondaryType = null;
-                if (pk.evolutionsFrom.size() == 1 && pk.evolutionsFrom.get(0).carryStats) {
-                    if (AbstractRomHandler.this.random.nextDouble() < 0.35 || dualTypeOnly) {
-                        pk.secondaryType = randomType();
-                        while (pk.secondaryType == pk.primaryType) {
+        switch (settings.getTypesMod()) {
+            case RANDOM_FOLLOW_EVOLUTIONS:
+                // Type randomization with evolution sanity
+                copyUpEvolutionsHelper(pk -> {
+                    // Step 1: Basic or Excluded From Copying Pokemon
+                    // A Basic/EFC pokemon has a 35% chance of a second type if
+                    // it has an evolution that copies type/stats, a 50% chance
+                    // otherwise
+                    pk.primaryType = randomType();
+                    pk.secondaryType = null;
+                    if (pk.evolutionsFrom.size() == 1 && pk.evolutionsFrom.get(0).carryStats) {
+                        if (AbstractRomHandler.this.random.nextDouble() < 0.35 || dualTypeOnly) {
                             pk.secondaryType = randomType();
+                            while (pk.secondaryType == pk.primaryType) {
+                                pk.secondaryType = randomType();
+                            }
                         }
+                    } else {
+                        if (AbstractRomHandler.this.random.nextDouble() < 0.5 || dualTypeOnly) {
+                            pk.secondaryType = randomType();
+                            while (pk.secondaryType == pk.primaryType) {
+                                pk.secondaryType = randomType();
+                            }
+                        }
+                    }
+                }, (evFrom, evTo, toMonIsFinalEvo) -> {
+                    evTo.primaryType = evFrom.primaryType;
+                    evTo.secondaryType = evFrom.secondaryType;
+
+                    if (evTo.secondaryType == null) {
+                        double chance = toMonIsFinalEvo ? 0.25 : 0.15;
+                        if (AbstractRomHandler.this.random.nextDouble() < chance || dualTypeOnly) {
+                            evTo.secondaryType = randomType();
+                            while (evTo.secondaryType == evTo.primaryType) {
+                                evTo.secondaryType = randomType();
+                            }
+                        }
+                    }
+                });
+                break;
+        case ONE_TYPE_RANDOM:
+            // Pick one of the pokemon's types and randomize it
+            // We want to be able to have no type
+            final ArrayList<Type> types = new ArrayList<>();
+            types.add(null);
+            types.addAll(Type.getAllTypes(generationOfPokemon()));
+
+            copyUpEvolutionsHelper(pk -> {
+                boolean randomizeFirstType = this.random.nextBoolean();
+                Type t = types.get(this.random.nextInt(types.size()));
+                while (t == pk.primaryType || t == pk.secondaryType) {
+                    t = types.get(this.random.nextInt(types.size()));
+                }
+
+                if (randomizeFirstType) {
+                    // dual type is becoming a single type
+                    if (t == null) {
+                        pk.primaryType = pk.secondaryType;
+                        pk.secondaryType = null;
+                    } else {
+                        pk.primaryType = t;
                     }
                 } else {
-                    if (AbstractRomHandler.this.random.nextDouble() < 0.5 || dualTypeOnly) {
-                        pk.secondaryType = randomType();
-                        while (pk.secondaryType == pk.primaryType) {
-                            pk.secondaryType = randomType();
-                        }
-                    }
+                    pk.secondaryType = t;
                 }
             }, (evFrom, evTo, toMonIsFinalEvo) -> {
                 evTo.primaryType = evFrom.primaryType;
                 evTo.secondaryType = evFrom.secondaryType;
-
-                if (evTo.secondaryType == null) {
-                    double chance = toMonIsFinalEvo ? 0.25 : 0.15;
-                    if (AbstractRomHandler.this.random.nextDouble() < chance || dualTypeOnly) {
-                        evTo.secondaryType = randomType();
-                        while (evTo.secondaryType == evTo.primaryType) {
-                            evTo.secondaryType = randomType();
-                        }
-                    }
-                }
             });
-        } else {
+
+//            for (Pokemon pkmn : allPokes) {
+//                if (pkmn != null) {
+//                    boolean randomizeFirstType = this.random.nextBoolean();
+//                    Type t = types.get(this.random.nextInt(types.size()));
+//                    while (t == pkmn.primaryType || t == pkmn.secondaryType) {
+//                        t = types.get(this.random.nextInt(types.size()));
+//                    }
+//
+//                    if (t == null) { System.out.println(t);}
+//                    if (randomizeFirstType) {
+//                        // dual type is becoming a single type
+//                        if (t == null) {
+//                            pkmn.primaryType = pkmn.secondaryType;
+//                            pkmn.secondaryType = null;
+//                        } else {
+//                            pkmn.primaryType = t;
+//                        }
+//                    } else {
+//                        pkmn.secondaryType = t;
+//                    }
+//                }
+//            }
+            break;
+        default:
             // Entirely random types
             for (Pokemon pkmn : allPokes) {
                 if (pkmn != null) {
