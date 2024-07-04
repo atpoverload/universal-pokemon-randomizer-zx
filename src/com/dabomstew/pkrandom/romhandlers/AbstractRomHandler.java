@@ -5673,16 +5673,19 @@ public abstract class AbstractRomHandler implements RomHandler {
                         Set<Pokemon> includeType = new HashSet<>();
                         for (Pokemon pk : replacements) {
                             // Special case for Eevee
-                            if (fromPK.number == Species.eevee) {
-                                if (pk.primaryType == ev.to.primaryType
-                                        || (pk.secondaryType != null) && pk.secondaryType == ev.to.primaryType) {
+                            if (generationOfPokemon() == 3) {
+                                if (fromPK.number == Species.eevee) {
+                                    EggGroup[] eggGroups = EggGroup.EEVEELUTION_EGG_GROUP.get(ev.to.number);
+                                    if (pk.eggGroup1 == eggGroups[0].offset || pk.eggGroup1 == eggGroups[1].offset ||
+                                            pk.eggGroup2 == eggGroups[0].offset || pk.eggGroup2 == eggGroups[1].offset) {
+                                        includeType.add(pk);
+                                    }
+                                } else if (pk.eggGroup1 == fromPK.eggGroup1
+                                        || pk.eggGroup1 == fromPK.eggGroup2
+                                        || pk.eggGroup2 == fromPK.eggGroup1
+                                        || pk.eggGroup2 == fromPK.eggGroup2) {
                                     includeType.add(pk);
                                 }
-                            } else if (pk.primaryType == fromPK.primaryType
-                                    || (fromPK.secondaryType != null && pk.primaryType == fromPK.secondaryType)
-                                    || (pk.secondaryType != null && pk.secondaryType == fromPK.primaryType)
-                                    || (fromPK.secondaryType != null && pk.secondaryType != null && pk.secondaryType == fromPK.secondaryType)) {
-                                includeType.add(pk);
                             }
                         }
 

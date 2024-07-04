@@ -648,6 +648,15 @@ public class Gen5RomHandler extends AbstractDSRomHandler {
         pkmn.catchRate = stats[Gen5Constants.bsCatchRateOffset] & 0xFF;
         pkmn.growthCurve = ExpCurve.fromByte(stats[Gen5Constants.bsGrowthCurveOffset]);
 
+        // Egg Groups
+        if (EggGroup.NON_LEGENDARY_NO_EGG_GROUP.containsKey(pkmn.number)) {
+            pkmn.eggGroup1 = EggGroup.NON_LEGENDARY_NO_EGG_GROUP.get(pkmn.number)[0].offset;
+            pkmn.eggGroup2 = EggGroup.NON_LEGENDARY_NO_EGG_GROUP.get(pkmn.number)[1].offset;
+        } else {
+            pkmn.eggGroup1 = stats[Gen4Constants.bsEggGroup1] & 0xFF;
+            pkmn.eggGroup2 = stats[Gen4Constants.bsEggGroup2] & 0xFF;
+        }
+
         pkmn.ability1 = stats[Gen5Constants.bsAbility1Offset] & 0xFF;
         pkmn.ability2 = stats[Gen5Constants.bsAbility2Offset] & 0xFF;
         pkmn.ability3 = stats[Gen5Constants.bsAbility3Offset] & 0xFF;

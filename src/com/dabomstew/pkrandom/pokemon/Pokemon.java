@@ -64,6 +64,9 @@ public class Pokemon implements Comparable<Pokemon> {
 
     public ExpCurve growthCurve;
 
+    public int eggGroup1;
+    public int eggGroup2;
+
     public List<Evolution> evolutionsFrom = new ArrayList<>();
     public List<Evolution> evolutionsTo = new ArrayList<>();
 
