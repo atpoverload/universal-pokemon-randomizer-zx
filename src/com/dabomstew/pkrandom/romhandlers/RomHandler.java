@@ -658,4 +658,8 @@ public interface RomHandler {
     List<Pokemon> getBannedFormesForPlayerPokemon();
 
     List<Pokemon> getBannedFormesForTrainerPokemon();
+
+    void recolorPokemon(Pokemon pkm);
+
+    BufferedImage drawPokedex();
 }

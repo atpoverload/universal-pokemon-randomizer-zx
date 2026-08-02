@@ -24,9 +24,11 @@ package com.dabomstew.pkrandom.romhandlers;
 /*--  along with this program. If not, see <http://www.gnu.org/licenses/>.  --*/
 /*----------------------------------------------------------------------------*/
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,8 +37,12 @@ import com.dabomstew.pkrandom.*;
 import com.dabomstew.pkrandom.constants.*;
 import com.dabomstew.pkrandom.exceptions.RandomizationException;
 import com.dabomstew.pkrandom.exceptions.RandomizerIOException;
+import com.dabomstew.pkrandom.paradox.*;
 import com.dabomstew.pkrandom.pokemon.*;
+import compressors.DSComp;
 import compressors.DSDecmp;
+
+import javax.imageio.ImageIO;
 
 public class Gen3RomHandler extends AbstractGBRomHandler {
 
@@ -443,6 +449,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
             romEntry.entries.put("PokemonStats", readPointer(Gen3Constants.efrlgPokemonStatsPointer));
             romEntry.entries.put("FrontSprites", readPointer(Gen3Constants.efrlgFrontSpritesPointer));
             romEntry.entries.put("PokemonPalettes", readPointer(Gen3Constants.efrlgPokemonPalettesPointer));
+            romEntry.entries.put("PokemonShinyPalettes", readPointer(Gen3Constants.efrlgPokemonPalettesPointer + 4));
             romEntry.entries.put("MoveTutorCompatibility",
                     romEntry.getValue("MoveTutorData") + romEntry.getValue("MoveTutorMoves") * 2);
         }
@@ -872,7 +879,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
             moves[i].isSoundMove = Gen3Constants.soundMoves.contains(moves[i].number);
 
             if (i == Moves.swift) {
-                perfectAccuracy = (int)moves[i].hitratio;
+                perfectAccuracy = (int) moves[i].hitratio;
             }
 
             if (GlobalConstants.normalMultihitMoves.contains(i)) {
@@ -1708,7 +1715,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     private boolean hasBattleTrappingAbility(Pokemon pokemon) {
         return pokemon != null
                 && (GlobalConstants.battleTrappingAbilities.contains(pokemon.ability1) || GlobalConstants.battleTrappingAbilities
-                        .contains(pokemon.ability2));
+                .contains(pokemon.ability2));
     }
 
     private EncounterSet readWildArea(int offset, int numOfEntries, String setName) {
@@ -1868,7 +1875,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                     thisPoke.level = readWord(pointerToPokes + poke * 16 + 2);
                     thisPoke.pokemon = pokesInternal[readWord(pointerToPokes + poke * 16 + 4)];
                     for (int move = 0; move < 4; move++) {
-                        thisPoke.moves[move] = readWord(pointerToPokes + poke * 16 + 6 + (move*2));
+                        thisPoke.moves[move] = readWord(pointerToPokes + poke * 16 + 6 + (move * 2));
                     }
                     tr.pokemon.add(thisPoke);
                 }
@@ -3242,18 +3249,18 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         int offset = find(rom, Gen3Constants.friendshipValueForEvoLocator);
         if (offset > 0) {
             // Amount of required happiness for HAPPINESS evolutions.
-            if (rom[offset] == (byte)219) {
-                rom[offset] = (byte)159;
+            if (rom[offset] == (byte) 219) {
+                rom[offset] = (byte) 159;
             }
             // FRLG doesn't have code to handle time-based evolutions.
             if (romEntry.romType != Gen3Constants.RomType_FRLG) {
                 // Amount of required happiness for HAPPINESS_DAY evolutions.
-                if (rom[offset + 38] == (byte)219) {
-                    rom[offset + 38] = (byte)159;
+                if (rom[offset + 38] == (byte) 219) {
+                    rom[offset + 38] = (byte) 159;
                 }
                 // Amount of required happiness for HAPPINESS_NIGHT evolutions.
-                if (rom[offset + 66] == (byte)219) {
-                    rom[offset + 66] = (byte)159;
+                if (rom[offset + 66] == (byte) 219) {
+                    rom[offset + 66] = (byte) 159;
                 }
             }
         }
@@ -3550,11 +3557,11 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                 throw new RandomizerIOException(e);
             }
 
-            newIndexToMusicPoolOffset  = romEntry.getValue("NewIndexToMusicPoolOffset");
+            newIndexToMusicPoolOffset = romEntry.getValue("NewIndexToMusicPoolOffset");
 
             if (newIndexToMusicPoolOffset > 0) {
 
-                for (int oldStatic: specialMusicStaticChanges.keySet()) {
+                for (int oldStatic : specialMusicStaticChanges.keySet()) {
                     int i = newIndexToMusicPoolOffset;
                     int index = internalToPokedex[readWord(rom, i)];
                     while (index != oldStatic || replaced.contains(i)) {
@@ -4253,7 +4260,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     }
 
     private void applyFastestTextPatch() {
-        if(romEntry.codeTweaks.get("InstantTextTweak") != null) {
+        if (romEntry.codeTweaks.get("InstantTextTweak") != null) {
             try {
                 FileFunctions.applyPatch(rom, romEntry.codeTweaks.get("InstantTextTweak"));
             } catch (IOException e) {
@@ -4398,26 +4405,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
 
     @Override
     public BufferedImage getMascotImage() {
-        Pokemon mascotPk = randomPokemon();
-        int mascotPokemon = pokedexToInternal[mascotPk.number];
-        int frontSprites = romEntry.getValue("FrontSprites");
-        int palettes = romEntry.getValue("PokemonPalettes");
-        int fsOffset = readPointer(frontSprites + mascotPokemon * 8);
-        int palOffset = readPointer(palettes + mascotPokemon * 8);
-
-        byte[] trueFrontSprite = DSDecmp.Decompress(rom, fsOffset);
-        byte[] truePalette = DSDecmp.Decompress(rom, palOffset);
-
-        // Convert palette into RGB
-        int[] convPalette = new int[16];
-        // Leave palette[0] as 00000000 for transparency
-        for (int i = 0; i < 15; i++) {
-            int palValue = readWord(truePalette, i * 2 + 2);
-            convPalette[i + 1] = GFXFunctions.conv16BitColorToARGB(palValue);
-        }
-
-        // Make image, 4bpp
-        return GFXFunctions.drawTiledImage(trueFrontSprite, convPalette, 64, 64, 4);
+        return drawPokemon(randomPokemon());
     }
 
     @Override
@@ -4470,5 +4458,86 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
             }
         }
         return items;
+    }
+
+    @Override
+    public void recolorPokemon(Pokemon pkm) {
+        // grab the pokemon's current palette
+        int pkmId = pokedexToInternal[pkm.number];
+        int palettes = romEntry.getValue("PokemonPalettes");
+        int palOffset = readPointer(palettes + pkmId * 8);
+        recolorPalette(
+                pkm,
+                palOffset,
+                Gen3PaletteGenerator.getInstance().getPaletteForDualType(pkm.primaryType, pkm.secondaryType));
+        palettes = romEntry.getValue("PokemonShinyPalettes");
+        palOffset = readPointer(palettes + pkmId * 8);
+        recolorPalette(
+                pkm,
+                palOffset,
+                Gen3PaletteGenerator.getInstance().getPaletteForDualType(pkm.secondaryType, pkm.primaryType));
+    }
+
+    private void recolorPalette(Pokemon pkm, int palOffset, ComponentColorPalette newPalette) {
+        PokemonPalette palette = new PokemonPalette(
+                DSDecmp.Decompress(rom, palOffset),
+                Gen3SpriteComponents.POKEMON_COMPONENTS[pkm.number - 1]);
+        PokemonPalette recoloredPalette = palette.recolor(newPalette);
+        try {
+            DSComp.Compress(rom, palOffset, recoloredPalette.toTruePalette());
+        } catch (Exception e) {
+            // For some reason this can fail. It seems like everyone does get recolored though.
+        }
+    }
+
+    @Override
+    public BufferedImage drawPokedex() {
+        BufferedImage pokedex = new BufferedImage(20 * 64, 64 * pokemonList.size() / 20 + 64, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = pokedex.getGraphics();
+        g.setFont(g.getFont().deriveFont(Font.BOLD));
+        g.setColor(Color.BLACK);
+        int i = 0;
+        for (Pokemon pkm : pokemonList) {
+            if (pkm == null) {
+                continue;
+            }
+            int x = 64 * (i % 20);
+            int y = 64 * (i / 20);
+            g.drawImage(drawPokemon(pkm), x, y, null);
+            g.drawString(String.format(
+                            "%s/%s",
+                            pkm.primaryType.abbreviation(),
+                            pkm.secondaryType.abbreviation()),
+                    x,
+                    y + 10);
+            i++;
+        }
+        try {
+            ImageIO.write(pokedex, "PNG", new File("pokedex.png"));
+        } catch (Exception e) {
+        }
+        return pokedex;
+    }
+
+    public BufferedImage drawPokemon(Pokemon pkm) {
+        int pokemon = pokedexToInternal[pkm.number];
+        int frontSprites = romEntry.getValue("FrontSprites");
+        int palettes = romEntry.getValue("PokemonPalettes");
+        int fsOffset = readPointer(frontSprites + pokemon * 8);
+        int palOffset = readPointer(palettes + pokemon * 8);
+
+        byte[] trueFrontSprite = DSDecmp.Decompress(rom, fsOffset);
+        byte[] truePalette = DSDecmp.Decompress(rom, palOffset);
+
+        // Convert palette into RGB
+        int[] convPalette = new int[16];
+        // Leave palette[0] as 00000000 for transparency
+        for (int i = 0; i < 15; i++) {
+            int palValue = readWord(truePalette, i * 2 + 2);
+            convPalette[i + 1] = GFXFunctions.conv16BitColorToARGB(palValue);
+        }
+
+        // Make image, 4bpp
+        return GFXFunctions.drawTiledImage(trueFrontSprite, convPalette, 64, 64, 4);
     }
 }

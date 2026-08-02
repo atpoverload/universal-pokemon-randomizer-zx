@@ -126,6 +126,24 @@ public class GFXFunctions {
         return 0xFF000000 | (red << 16) | (green << 8) | blue;
     }
 
+    public static int convARGBTo16BitColor(int argb) {
+        int red   = (argb >> 16) & 0xFF;
+        int green = (argb >>  8) & 0xFF;
+        int blue  =  argb        & 0xFF;
+
+        // Inverse of * 8.25: divide by 8.25, which is the same as * 4/33
+        int red5   = (int) Math.round(red   / 8.25);
+        int green5 = (int) Math.round(green / 8.25);
+        int blue5  = (int) Math.round(blue  / 8.25);
+
+        // Clamp to 5-bit range [0, 31] to be safe
+        red5   = Math.min(31, Math.max(0, red5));
+        green5 = Math.min(31, Math.max(0, green5));
+        blue5  = Math.min(31, Math.max(0, blue5));
+
+        return (blue5 << 10) | (green5 << 5) | red5;
+    }
+
     public static int conv3DS16BitColorToARGB(int palValue) {
         int alpha = (int) ((palValue & 0x1) * 0xFF);
         int blue = (int) (((palValue & 0x3E) >> 1) * 8.25);

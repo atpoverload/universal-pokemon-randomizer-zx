@@ -75,4 +75,46 @@ public enum Type {
         return RomFunctions.camelCase(this.toString());
     }
 
+    public String abbreviation() {
+        switch (this) {
+            case NORMAL:
+                return "NRM";
+            case FIGHTING:
+                return "FGT";
+            case FLYING:
+                return "FLY";
+            case GRASS:
+                return "GRS";
+            case WATER:
+                return "WTR";
+            case FIRE:
+                return "FIR";
+            case ROCK:
+                return "RCK";
+            case GROUND:
+                return "GRD";
+            case PSYCHIC:
+                return "PSY";
+            case BUG:
+                return "BUG";
+            case DRAGON:
+                return "DRA";
+            case ELECTRIC:
+                return "ELE";
+            case GHOST:
+                return "GHT";
+            case POISON:
+                return "PSN";
+            case ICE:
+                return "ICE";
+            case STEEL:
+                return "STL";
+            case DARK:
+                return "DAR";
+            case FAIRY:
+                return "FAY";
+            default:
+                return "???";
+        }
+    }
 }

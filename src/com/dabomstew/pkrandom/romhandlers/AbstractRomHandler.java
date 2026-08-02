@@ -28,6 +28,7 @@ package com.dabomstew.pkrandom.romhandlers;
 /*--  along with this program. If not, see <http://www.gnu.org/licenses/>.  --*/
 /*----------------------------------------------------------------------------*/
 
+import java.awt.image.BufferedImage;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -480,7 +481,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                 pk.primaryType = pk.baseForme.primaryType;
                 pk.secondaryType = pk.baseForme.secondaryType;
             }
+            if (pk != null) {
+                recolorPokemon(pk);
+            }
         }
+        drawPokedex();
 
         if (megaEvolutionSanity) {
             List<MegaEvolution> allMegaEvos = getMegaEvolutions();
@@ -500,6 +505,10 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
         }
     }
+
+    @Override public void recolorPokemon(Pokemon pkm) {}
+
+    @Override public BufferedImage drawPokedex() {return new BufferedImage(0, 0, BufferedImage.TYPE_INT_ARGB);}
 
     @Override
     public void randomizeAbilities(Settings settings) {
